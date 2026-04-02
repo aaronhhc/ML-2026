@@ -40,3 +40,5 @@ datasets/
 build/
 dist/
 *.egg-info/
+
+*:Zone.Identifier
