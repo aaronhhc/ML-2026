@@ -41,4 +41,8 @@ build/
 dist/
 *.egg-info/
 
+.codex
+.venv/
+__pycache__/
+*.pyc
 *:Zone.Identifier
