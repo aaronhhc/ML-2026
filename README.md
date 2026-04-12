@@ -2,6 +2,12 @@
 
 Machine Learning Concept 2026 course repository containing homework code, datasets, figures, and small interactive demos.
 
+## Members
+
+- 黃竑喆 - 410410080
+- 金晴宇 - 411410051
+- 吳旻融 - 412410099
+
 ## Repository Layout
 
 ```text
