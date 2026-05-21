@@ -1,0 +1,10 @@
+K-means vs GMM Comparison
+==================================================
+
+Adjusted Rand Index between K-means and GMM labels: 0.405257
+
+Discussion:
+- K-means gives hard assignments.
+- GMM gives probabilistic soft assignments.
+- K-means assumes roughly spherical clusters.
+- GMM can model elliptical clusters through covariance matrices.

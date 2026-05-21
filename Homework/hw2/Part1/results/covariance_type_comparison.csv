@@ -1,0 +1,5 @@
+covariance_type,bic,aic,lower_bound,n_iter,converged
+full,-2757.580106,-2842.767103,4.814180,19,True
+diag,-2388.678476,-2459.050343,4.161130,9,True
+spherical,-2331.877384,-2387.434121,4.028837,5,True
+tied,-2316.017013,-2367.869967,3.992922,3,True
