@@ -1,0 +1,139 @@
+Part 1 — GMM on 2-D Toy Data
+
+1. Dataset and Experimental Setup
+
+In Part 1, we used the provided data1.txt dataset, which contains two-dimensional data points. The goal is to fit a Gaussian Mixture Model (GMM) with four components and analyze the learned mixture distribution.
+
+We trained the GMM using sklearn.mixture.GaussianMixture with the following main settings:
+
+n_components = 4
+covariance_type = full
+init_params = kmeans
+random_state = 42
+max_iter = 300
+n_init = 5
+
+K-means initialization was used to provide stable initial cluster centers for the GMM before running the Expectation-Maximization algorithm.
+
+
+2. GMM Estimated Parameters
+
+The final GMM successfully converged after 19 EM iterations. The final lower bound, which represents the average log-likelihood optimized by EM, is 4.814180. The mixture weights are relatively balanced across the four components:
+
+Component 1: 0.206756
+Component 2: 0.258090
+Component 3: 0.283243
+Component 4: 0.251912
+
+This means that no component collapsed or became meaningless during training. Each Gaussian component explains a reasonable portion of the data distribution.
+
+The estimated component means are:
+
+Component 1: (-0.013949, -0.079046)
+Component 2: (-0.042733,  0.044805)
+Component 3: (-0.018935, -0.016828)
+Component 4: ( 0.027994,  0.061272)
+
+The estimated covariance matrices are:
+
+Component 1:
+[[0.000407, 0.000228],
+ [0.000228, 0.000138]]
+
+Component 2:
+[[0.000190, 0.000282],
+ [0.000282, 0.000431]]
+
+Component 3:
+[[ 0.000718, -0.000559],
+ [-0.000559,  0.000571]]
+
+Component 4:
+[[ 0.001038, -0.000420],
+ [-0.000420,  0.000246]]
+
+The full covariance matrices allow each component to model not only the variance along the X and Y axes, but also the correlation between X and Y. This is important because the dataset contains elongated and rotated structures.
+
+
+3. EM Improvement from Initialization to Convergence
+
+The Expectation-Maximization algorithm improves the GMM iteratively. First, K-means provides an initial grouping of the data. Then EM repeatedly performs two steps.
+
+In the E-step, the model computes the responsibility of each Gaussian component for every data point. Responsibility means the probability that a certain component generated a given point.
+
+In the M-step, the model updates the parameters of each component, including the mean, covariance matrix, and mixture weight, based on the current responsibilities.
+
+This process repeats until the log-likelihood stops improving significantly. In our experiment, the model converged after 19 iterations, showing that EM successfully refined the initial K-means-based parameters into a probabilistic density model.
+
+
+4. Visualization Results
+
+4.1 Scatter Plot of GMM Component Assignments
+
+The scatter plot shows the data points colored by their predicted GMM component. The fitted GMM separates the dataset into four components. Compared with K-means, GMM provides a probabilistic interpretation of cluster membership instead of assigning each point only by distance to a centroid.
+
+The result shows that the four components capture different regions of the curved 2-D structure.
+
+4.2 GMM Density Contour Plot
+
+The contour plot visualizes the learned probability density of the GMM. Since the final model uses full covariance, each Gaussian component can form a rotated ellipse. This is suitable for the dataset because the clusters are not simple circles. Some components are elongated and tilted, which would be difficult to model using spherical covariance.
+
+The contour plot confirms that the learned Gaussian components follow the main shape and orientation of the data.
+
+4.3 3-D Log Probability Density Plot
+
+The 3-D log-density plot shows the probability landscape learned by the GMM. Higher regions correspond to areas where the model assigns higher probability density. We used log density instead of raw density because the feature values are very small in scale, which makes raw density values extremely sharp and harder to visualize.
+
+The 3-D plot helps show how the GMM models the data as a mixture of several local density regions.
+
+
+5. Covariance Type and Model Selection
+
+We compared four covariance settings with K=4: full, diag, spherical, and tied.
+
+Covariance Type | BIC | AIC | Lower Bound
+full      | -2757.58 | -2842.77 | 4.814
+diag      | -2388.68 | -2459.05 | 4.161
+spherical | -2331.88 | -2387.43 | 4.029
+tied      | -2316.02 | -2367.87 | 3.993
+
+The full covariance model achieved the lowest BIC and AIC scores among the four covariance settings. Since lower BIC/AIC values indicate a better trade-off between model fit and complexity, full covariance is the best setting for this dataset.
+
+This result is reasonable because full covariance can model rotated and elongated elliptical clusters, while diagonal covariance only models axis-aligned ellipses and spherical covariance only models circular clusters.
+
+
+6. BIC/AIC Analysis
+
+The BIC/AIC model-selection plot compares different numbers of components and covariance types. The result shows that the full covariance model performs better than the diagonal and spherical models.
+
+For the full covariance setting, BIC reaches its best value around K=4. Although AIC may continue to prefer more components, AIC has a lighter penalty for model complexity. Therefore, it can favor more complex models and may lead to overfitting.
+
+Because BIC penalizes complexity more strongly, we select:
+
+Final model: K = 4, covariance_type = full
+
+This choice is also consistent with the assignment setting and the visible structure of the dataset.
+
+
+7. Comparison with K-means
+
+We also compared GMM with K-means using the Adjusted Rand Index (ARI). The ARI between the K-means labels and the GMM labels is:
+
+Adjusted Rand Index = 0.405257
+
+This value indicates that K-means and GMM produce only moderately similar clustering results. The difference is expected because K-means uses hard assignments and mainly separates data by distance to cluster centers. It tends to work better when clusters are roughly spherical.
+
+In contrast, GMM uses soft probabilistic assignments and models each component with its own covariance matrix. Therefore, GMM can better represent elliptical, rotated, and overlapping structures. This makes GMM more suitable for this 2-D dataset.
+
+
+8. Conclusion
+
+In Part 1, we successfully fitted a 4-component Gaussian Mixture Model on the provided 2-D dataset. The model converged after 19 EM iterations and produced balanced mixture weights across the four components.
+
+The visualization results show that GMM captures the curved and elongated structure of the data. The covariance comparison and BIC/AIC analysis support the use of full covariance. Compared with K-means, GMM provides a more flexible density-based clustering model because it supports soft assignments and component-specific covariance matrices.
+
+Therefore, our final selected model is:
+
+GMM with K = 4 and full covariance
+
+This model provides the best balance between interpretability, density modeling ability, and quantitative model-selection performance.
