@@ -9,7 +9,7 @@ from sklearn.metrics import adjusted_rand_score
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_PATH = BASE_DIR / "data1.txt"
+DATA_PATH = BASE_DIR.parent / "Data" / "data1.txt"
 FIG_DIR = BASE_DIR / "figures"
 RESULT_DIR = BASE_DIR / "results"
 
