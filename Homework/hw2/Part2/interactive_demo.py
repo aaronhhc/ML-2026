@@ -62,7 +62,7 @@ st.sidebar.header("Dataset")
 dataset_choice = st.sidebar.selectbox("Dataset source", ["Mall Customers", "Upload CSV"])
 
 if dataset_choice == "Mall Customers":
-    raw_df, _ = cached_mall_customers()
+    raw_df = cached_mall_customers()
     dataset_label = DATASET_NAME
     st.sidebar.caption(KAGGLE_URL)
 else:

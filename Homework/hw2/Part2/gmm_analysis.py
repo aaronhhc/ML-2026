@@ -25,11 +25,22 @@ DATASET_NAME = "Mall Customers"
 KAGGLE_URL = "https://www.kaggle.com/datasets/kandij/mall-customers"
 
 
-def load_mall_customers(data_path=DATA_PATH):
-    df = pd.read_csv(data_path)
-    selected_columns = ["CustomerID", "Gender", *NUMERIC_FEATURES]
+def load_mall_customers():
+    df = pd.read_csv("../Data/Mall_Customers.csv")
+
+    # Some versions of this dataset use "Genre" instead of "Gender"
+    if "Genre" in df.columns and "Gender" not in df.columns:
+        df = df.rename(columns={"Genre": "Gender"})
+
+    selected_columns = [
+        "Gender",
+        "Age",
+        "Annual Income (k$)",
+        "Spending Score (1-100)"
+    ]
+
     clean_df = df[selected_columns].dropna().copy()
-    return df, clean_df
+    return clean_df
 
 
 def prepare_features(df, features):
