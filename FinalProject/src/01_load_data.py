@@ -6,9 +6,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
+MAX_LINES = 2_000_000
 
-
-def load_netflix_file(file_path, max_lines=500000):
+def load_netflix_file(file_path, max_lines=MAX_LINES):
     rows = []
     current_movie_id = None
 
@@ -47,7 +47,7 @@ def main():
 
     print(f"Loading from: {input_path}")
 
-    df = load_netflix_file(input_path, max_lines=500000)
+    df = load_netflix_file(input_path, max_lines=MAX_LINES)
 
     print("\nPreview:")
     print(df.head())
