@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.pyo
+*.pyc
 
 # Virtual environments
 venv/
@@ -20,6 +21,7 @@ uv.lock
 # OS files
 .DS_Store
 Thumbs.db
+*:Zone.Identifier
 
 # Secrets / environment variables
 .env
@@ -36,16 +38,22 @@ Thumbs.db
 *.pth
 
 # Data folders
-data/
 datasets/
+Homework/hw2/Data/
+
+# FinalProject raw Netflix Prize data
+FinalProject/data/raw/*
+!FinalProject/data/raw/.gitkeep
+
+# Large generated FinalProject data
+FinalProject/data/processed/ratings_sample.csv
+FinalProject/data/processed/user_features.csv
+FinalProject/data/processed/clustered_users.csv
+
+# Codex
+.codex
 
 # Python packaging
 build/
 dist/
 *.egg-info/
-
-.codex
-.venv/
-__pycache__/
-*.pyc
-*:Zone.Identifier
