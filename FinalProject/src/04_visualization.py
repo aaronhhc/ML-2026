@@ -12,7 +12,7 @@ FIGURE_DIR = PROJECT_ROOT / "reports" / "figures"
 
 FEATURE_COLUMNS = [
     "avg_rating",
-    "rating_count",
+    "log_rating_count",
     "rating_std",
     "median_rating",
     "rating_range",
@@ -23,6 +23,8 @@ FEATURE_COLUMNS = [
     "rating_3_ratio",
     "rating_4_ratio",
     "rating_5_ratio",
+    "rating_entropy",
+    "extreme_rating_ratio",
     "active_days",
     "rating_frequency",
 ]

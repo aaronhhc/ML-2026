@@ -12,11 +12,13 @@ FIGURE_DIR = PROJECT_ROOT / "reports" / "figures"
 
 SUMMARY_PROFILE_FEATURES = [
     "avg_rating",
-    "rating_count",
+    "log_rating_count",
     "rating_std",
     "high_rating_ratio",
     "low_rating_ratio",
     "rating_5_ratio",
+    "rating_entropy",
+    "extreme_rating_ratio",
     "active_days",
     "rating_frequency",
 ]
@@ -24,7 +26,7 @@ SUMMARY_PROFILE_FEATURES = [
 
 ALL_PROFILE_FEATURES = [
     "avg_rating",
-    "rating_count",
+    "log_rating_count",
     "rating_std",
     "median_rating",
     "rating_range",
@@ -35,10 +37,11 @@ ALL_PROFILE_FEATURES = [
     "rating_3_ratio",
     "rating_4_ratio",
     "rating_5_ratio",
+    "rating_entropy",
+    "extreme_rating_ratio",
     "active_days",
     "rating_frequency",
 ]
-
 
 def create_cluster_profile_plot(df, features, output_path, title, figsize=(12, 6)):
     scaler = StandardScaler()

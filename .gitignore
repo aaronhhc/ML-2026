@@ -49,6 +49,7 @@ FinalProject/data/raw/*
 FinalProject/data/processed/ratings_sample.csv
 FinalProject/data/processed/user_features.csv
 FinalProject/data/processed/clustered_users.csv
+FinalProject/data/processed/clustered_users_named.csv
 
 # Codex
 .codex
