@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -59,6 +60,29 @@ def build_user_features(df):
     )
     features["low_rating_ratio"] = (
         features["rating_1_ratio"] + features["rating_2_ratio"]
+    )
+
+    # Log-scaled rating count to reduce heavy-user effect
+    features["log_rating_count"] = np.log1p(features["rating_count"])
+
+    # Rating entropy: measures how diverse the user's rating distribution is
+    rating_ratio_cols = [
+        "rating_1_ratio",
+        "rating_2_ratio",
+        "rating_3_ratio",
+        "rating_4_ratio",
+        "rating_5_ratio",
+    ]
+
+    eps = 1e-12
+    features["rating_entropy"] = -(
+        features[rating_ratio_cols] *
+        np.log(features[rating_ratio_cols] + eps)
+    ).sum(axis=1)
+
+    # Extreme rating behavior: ratio of 1-star and 5-star ratings
+    features["extreme_rating_ratio"] = (
+        features["rating_1_ratio"] + features["rating_5_ratio"]
     )
 
     # Users with only one rating have NaN std
