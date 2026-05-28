@@ -11,46 +11,84 @@ def build_user_features(df):
 
     grouped = df.groupby("user_id")
 
+    # Basic user-level statistics
     features = grouped.agg(
         avg_rating=("rating", "mean"),
         rating_count=("rating", "count"),
         rating_std=("rating", "std"),
         median_rating=("rating", "median"),
+        min_rating=("rating", "min"),
+        max_rating=("rating", "max"),
         first_rating_date=("date", "min"),
         last_rating_date=("date", "max"),
     ).reset_index()
 
-    high_ratio = (
-        grouped.apply(lambda x: (x["rating"] >= 4).mean())
-        .reset_index(name="high_rating_ratio")
+    # Rating range
+    features["rating_range"] = features["max_rating"] - features["min_rating"]
+
+    # Rating distribution count table
+    rating_counts = (
+        df.pivot_table(
+            index="user_id",
+            columns="rating",
+            values="movie_id",
+            aggfunc="count",
+            fill_value=0,
+        )
     )
 
-    low_ratio = (
-        grouped.apply(lambda x: (x["rating"] <= 2).mean())
-        .reset_index(name="low_rating_ratio")
+    # Make sure all rating columns 1 to 5 exist
+    for rating_value in range(1, 6):
+        if rating_value not in rating_counts.columns:
+            rating_counts[rating_value] = 0
+
+    rating_counts = rating_counts[[1, 2, 3, 4, 5]]
+
+    # Convert counts to ratios
+    rating_ratios = rating_counts.div(rating_counts.sum(axis=1), axis=0)
+    rating_ratios.columns = [
+        f"rating_{rating_value}_ratio" for rating_value in rating_ratios.columns
+    ]
+    rating_ratios = rating_ratios.reset_index()
+
+    features = features.merge(rating_ratios, on="user_id")
+
+    # High / low rating ratios
+    features["high_rating_ratio"] = (
+        features["rating_4_ratio"] + features["rating_5_ratio"]
+    )
+    features["low_rating_ratio"] = (
+        features["rating_1_ratio"] + features["rating_2_ratio"]
     )
 
-    features = features.merge(high_ratio, on="user_id")
-    features = features.merge(low_ratio, on="user_id")
-
+    # Users with only one rating have NaN std
     features["rating_std"] = features["rating_std"].fillna(0)
 
+    # Active period
     features["active_days"] = (
         features["last_rating_date"] - features["first_rating_date"]
     ).dt.days
 
+    # Avoid extremely large frequency from very short active periods
     features["active_days"] = features["active_days"].clip(lower=7)
 
+    # Rating frequency
     features["rating_frequency"] = (
         features["rating_count"] / features["active_days"]
     )
 
+    # Clip high-frequency outliers
     features["rating_frequency"] = features["rating_frequency"].clip(
-    upper=features["rating_frequency"].quantile(0.99)
+        upper=features["rating_frequency"].quantile(0.99)
     )
 
     features = features.drop(
-        columns=["first_rating_date", "last_rating_date"]
+        columns=[
+            "first_rating_date",
+            "last_rating_date",
+            "min_rating",
+            "max_rating",
+        ]
     )
 
     return features
