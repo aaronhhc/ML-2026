@@ -56,7 +56,7 @@ Most scripts use Python 3 and the following libraries:
 Example setup:
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install numpy pandas matplotlib scikit-learn streamlit Pillow seaborn
 ```
