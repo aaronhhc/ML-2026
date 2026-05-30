@@ -1,7 +1,7 @@
 # ML-2026
 
 Machine Learning Concept 2026 course repository containing homework code,
-datasets, generated figures, reports, and small interactive demos.
+datasets, generated figures, reports, small interactive demos, and the final project.
 
 ## Members
 
@@ -26,6 +26,19 @@ Homework/
     ├── Data/                 # customer and clustering datasets
     ├── Part1/                # GMM analysis, model selection, reports
     └── Part2/                # GMM/K-means comparison and interactive demo
+
+FinalProject/
+├── data/
+│   ├── raw/                  # local Netflix Prize data, not committed
+│   └── processed/            # cluster summaries and K-selection results
+├── reports/
+│   ├── figures/              # generated plots for the final report
+│   ├── v1_report.md
+│   ├── v2_report.md
+│   ├── v3_report.md
+│   └── v4_report.md
+├── src/                      # final project pipeline scripts
+└── requirements.txt
 ```
 
 ## Topics Covered
@@ -40,6 +53,48 @@ Homework/
 - Gaussian Mixture Models, EM-style clustering, and covariance analysis
 - Model selection with BIC and AIC
 - K-means versus GMM comparison
+- Large-scale user behavior feature engineering
+- MiniBatchKMeans clustering for Netflix user segmentation
+- Cluster interpretation, naming, and report visualization
+
+## Final Project
+
+The final project analyzes Netflix Prize rating data and clusters users based
+on rating behavior rather than predicting individual movie ratings.
+
+Research question:
+
+```text
+Can Netflix users be grouped into meaningful behavioral clusters using rating records alone?
+```
+
+The final version uses `combined_data_1.txt`, containing nearly 10 million
+rating records. Raw Netflix data is not included in this repository.
+
+Final data scale:
+
+| Item | Count |
+|---|---:|
+| Rating records | 9,998,038 |
+| Users before filtering | 447,835 |
+| Users after filtering | 154,655 |
+| Features used for clustering | 16 |
+
+The final pipeline builds user-level behavior features, standardizes them,
+runs MiniBatchKMeans, generates visualizations, and assigns interpretable
+cluster names.
+
+Final clustering result:
+
+| Cluster | User Count | Name |
+|---:|---:|---|
+| 0 | 66,310 | Conservative Moderate Raters |
+| 1 | 54,032 | Diverse Critical Raters |
+| 2 | 34,313 | Generous Extreme Raters |
+
+See [FinalProject/README.md](FinalProject/README.md) and
+[FinalProject/reports/v4_report.md](FinalProject/reports/v4_report.md) for
+the full project description and final report.
 
 ## Environment
 
@@ -59,6 +114,13 @@ Example setup:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install numpy pandas matplotlib scikit-learn streamlit Pillow seaborn
+```
+
+For the final project only:
+
+```bash
+cd FinalProject
+pip install -r requirements.txt
 ```
 
 ## Running the Homework Code
@@ -92,6 +154,32 @@ python run_part2_analysis.py
 streamlit run interactive_demo.py
 ```
 
+## Running the Final Project
+
+Place the Netflix Prize `combined_data_1.txt` file in
+`FinalProject/data/raw/`, then run:
+
+```bash
+cd FinalProject/src
+python 01_load_data.py
+python 02_feature_engineering.py
+python 03_clustering.py
+python 04_visualization.py
+python 05_cluster_profile.py
+python 06_add_cluster_names.py
+```
+
+Final project scripts:
+
+| Script | Description |
+|---|---|
+| `01_load_data.py` | Loads and parses Netflix Prize raw rating data |
+| `02_feature_engineering.py` | Builds user-level behavior features |
+| `03_clustering.py` | Runs MiniBatchKMeans and K selection |
+| `04_visualization.py` | Generates elbow, silhouette, PCA plots, and cluster summary |
+| `05_cluster_profile.py` | Generates standardized cluster profile plots |
+| `06_add_cluster_names.py` | Adds human-readable cluster names |
+
 ## Outputs
 
 - Figures are saved in each assignment's `figure/` or `figures/` directory.
@@ -99,11 +187,18 @@ streamlit run interactive_demo.py
   usually as `.txt` or `.csv` files.
 - HW2 Part 2 also includes a demo video and screenshots for the interactive
   GMM comparison workflow.
+- Final project figures are saved in `FinalProject/reports/figures/`.
+- Final project processed summaries are saved in `FinalProject/data/processed/`,
+  including `cluster_summary.csv`, `cluster_summary_named.csv`, and
+  `k_selection_results.csv`.
 
 ## Notes
 
 - The repository currently contains local virtual environment folders under
-  `Homework/hw1-1/.venv/` and `Homework/hw2/.venv/`. These are useful locally
-  but are usually excluded from version control in a clean submission.
+  `Homework/hw1-1/.venv/`, `Homework/hw2/.venv/`, and `FinalProject/.venv/`.
+  These are useful locally but are usually excluded from version control in a
+  clean submission.
 - Some generated caches, such as `__pycache__/`, may appear after running the
   scripts and can be safely regenerated.
+- Raw Netflix Prize data and large generated intermediate files are excluded
+  from the final project with `.gitignore`.

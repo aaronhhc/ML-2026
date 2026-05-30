@@ -1,8 +1,9 @@
 from pathlib import Path
+
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import StandardScaler
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -27,6 +28,18 @@ FEATURE_COLUMNS = [
     "rating_frequency",
 ]
 
+K_RANGE = range(2, 9)
+BEST_K = 3
+
+# MiniBatchKMeans is used for the V4 large-scale experiment.
+BATCH_SIZE = 4096
+N_INIT = 10
+RANDOM_STATE = 42
+
+# Full silhouette computation is expensive for 154k+ users.
+# We estimate it using a fixed random sample for efficiency and reproducibility.
+SILHOUETTE_SAMPLE_SIZE = 10_000
+
 
 def main():
     input_path = PROCESSED_DATA_DIR / "user_features.csv"
@@ -35,6 +48,10 @@ def main():
 
     print(f"Loading from: {input_path}")
     df = pd.read_csv(input_path)
+
+    missing_features = [col for col in FEATURE_COLUMNS if col not in df.columns]
+    if missing_features:
+        raise ValueError(f"Missing required feature columns: {missing_features}")
 
     X = df[FEATURE_COLUMNS]
 
@@ -45,23 +62,33 @@ def main():
 
     print("\nTesting different K values...")
 
-    for k in range(2, 9):
-        kmeans = KMeans(
+    for k in K_RANGE:
+        print(f"Running MiniBatchKMeans for K={k}...")
+
+        model = MiniBatchKMeans(
             n_clusters=k,
-            random_state=42,
-            n_init=10
+            random_state=RANDOM_STATE,
+            batch_size=BATCH_SIZE,
+            n_init=N_INIT,
         )
 
-        labels = kmeans.fit_predict(X_scaled)
+        labels = model.fit_predict(X_scaled)
 
-        inertia = kmeans.inertia_
-        silhouette = silhouette_score(X_scaled, labels)
+        inertia = model.inertia_
+        silhouette = silhouette_score(
+            X_scaled,
+            labels,
+            sample_size=SILHOUETTE_SAMPLE_SIZE,
+            random_state=RANDOM_STATE,
+        )
 
-        results.append({
-            "k": k,
-            "inertia": inertia,
-            "silhouette_score": silhouette
-        })
+        results.append(
+            {
+                "k": k,
+                "inertia": inertia,
+                "silhouette_score": silhouette,
+            }
+        )
 
         print(
             f"K={k}, "
@@ -72,15 +99,13 @@ def main():
     result_df = pd.DataFrame(results)
     result_df.to_csv(output_k_result_path, index=False)
 
-    
-    best_k = 3
+    print(f"\nTraining final MiniBatchKMeans model with K={BEST_K}...")
 
-    print(f"\nTraining final K-means model with K={best_k}...")
-
-    final_model = KMeans(
-        n_clusters=best_k,
-        random_state=42,
-        n_init=10
+    final_model = MiniBatchKMeans(
+        n_clusters=BEST_K,
+        random_state=RANDOM_STATE,
+        batch_size=BATCH_SIZE,
+        n_init=N_INIT,
     )
 
     df["cluster"] = final_model.fit_predict(X_scaled)

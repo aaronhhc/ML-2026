@@ -7,16 +7,16 @@ PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
 
 
 CLUSTER_NAME_MAP = {
-    0: "Generous Extreme Raters",
-    1: "Conservative Moderate Raters",
-    2: "Diverse Critical Raters",
+    0: "Conservative Moderate Raters",
+    1: "Diverse Critical Raters",
+    2: "Generous Extreme Raters",
 }
 
 
 CLUSTER_DESCRIPTION_MAP = {
-    0: "Users who tend to give high ratings and frequently use extreme positive ratings.",
-    1: "Users who avoid extreme scores and show more conservative, moderate rating behavior.",
-    2: "Users who rate more critically and show greater variation in rating behavior.",
+    0: "Users who avoid extreme scores and show stable, moderate rating behavior.",
+    1: "Users who rate more critically and show greater variation in rating behavior.",
+    2: "Users who tend to give high ratings and frequently use strong positive ratings.",
 }
 
 
