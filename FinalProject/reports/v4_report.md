@@ -141,6 +141,8 @@ The clustering pipeline is:
 9. Generate cluster summaries and visualizations
 10. Assign human-readable cluster names
 
+For the V4 large-scale experiment, silhouette score is computed using a fixed random sample of 10,000 users for efficiency. This reduces computation time while keeping the K comparison reproducible.
+
 ---
 
 ## 7. K Selection
@@ -157,9 +159,7 @@ MiniBatchKMeans was tested with K values from 2 to 8.
 | 7 | 1,147,379.98 | 0.1458 |
 | 8 | 1,088,308.20 | 0.1514 |
 
-K = 2 has the highest silhouette score. However, K = 3 is selected because it provides more meaningful and interpretable user behavior groups.
-
-Since this project focuses on user segmentation, interpretability is an important criterion in addition to numerical metrics.
+Although K = 2 gives the highest silhouette score, it mainly separates users into broader high-rating and lower/more diverse-rating groups. Since the goal of this project is user behavior segmentation, K = 3 is selected because it provides a more informative behavioral structure. In particular, K = 3 separates moderate users from critical users and generous high-rating users, which is more useful for interpretation and recommendation-related analysis.
 
 ---
 
@@ -184,6 +184,12 @@ The three clusters are all large enough for meaningful interpretation. There is 
 ---
 
 ## 9. Cluster Interpretation
+
+| Cluster | Key Above-Average Features | Key Below-Average Features | Interpretation |
+|---:|---|---|---|
+| 0 | Slightly higher average rating | Lower rating standard deviation, lower extreme rating ratio | Stable and moderate rating behavior |
+| 1 | Higher rating count, higher rating standard deviation, longer active days | Lower average rating | Critical and diverse rating behavior |
+| 2 | Higher average rating, higher extreme rating ratio, higher rating frequency | Shorter active days, lower rating count | Generous and strongly positive rating behavior |
 
 ### Cluster 0: Conservative Moderate Raters
 
@@ -279,6 +285,8 @@ This project has several limitations:
 5. K-means assumes relatively simple cluster shapes.
 6. K=2 has the highest silhouette score, while K=3 is selected for interpretability.
 7. The Netflix Prize dataset is old and may not fully represent modern streaming behavior.
+
+The V4 experiment uses the first 10 million lines from `combined_data_1.txt`. Since Netflix Prize data is organized by movie blocks rather than randomly shuffled records, this may introduce movie sampling bias. Therefore, the result should be interpreted as a large-scale exploratory analysis rather than a fully random sample of the entire Netflix Prize dataset.
 
 ---
 
