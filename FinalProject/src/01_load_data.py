@@ -6,9 +6,22 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
-MAX_LINES = 2_000_000
+
+DATA_FILE_NAME = "combined_data_1.txt"
+
+# Use the first 10M lines for the V4 large-scale experiment.
+# This produces about 9.99M rating records after excluding movie header lines.
+MAX_LINES = 10_000_000
+
 
 def load_netflix_file(file_path, max_lines=MAX_LINES):
+    """
+    Load Netflix Prize combined_data file.
+
+    The raw file format uses movie ID headers such as '1:',
+    followed by user rating records in the format:
+    user_id,rating,date
+    """
     rows = []
     current_movie_id = None
 
@@ -36,13 +49,14 @@ def load_netflix_file(file_path, max_lines=MAX_LINES):
 
     df = pd.DataFrame(rows)
     df["date"] = pd.to_datetime(df["date"])
+
     return df
 
 
 def main():
     PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    input_path = RAW_DATA_DIR / "combined_data_1.txt"
+    input_path = RAW_DATA_DIR / DATA_FILE_NAME
     output_path = PROCESSED_DATA_DIR / "ratings_sample.csv"
 
     print(f"Loading from: {input_path}")
